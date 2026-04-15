@@ -1,19 +1,19 @@
 #include <Ultrasonic.h>
 
-const int leftSensorTrig    = 8;
-const int leftSensorEcho    = 9;
-const int frontSensorTrig   = 10;
-const int frontSensorEcho   = 11;
-const int rightSensorTrig   = 12;
-const int rightSensorEcho   = 13;
+const int leftSensorTrig     = 8;
+const int leftSensorEcho     = 9;
+const int frontSensorTrig    = 10;
+const int frontSensorEcho    = 11;
+const int rightSensorTrig    = 12;
+const int rightSensorEcho    = 13;
 
-const int motorLeftForward  = 3;
-const int motorLeftBackward = 5;
-const int motorRightForward = 6;
+const int motorLeftForward   = 3;
+const int motorLeftBackward  = 5;
+const int motorRightForward  = 6;
 const int motorRightBackward = 9;
 
 int motorSpeed = 150;
-int turnspeed=120;
+int turnSpeed  = 120;
 
 Ultrasonic leftSensor(leftSensorTrig, leftSensorEcho);
 Ultrasonic frontSensor(frontSensorTrig, frontSensorEcho);
@@ -36,14 +36,18 @@ void loop() {
   Serial.print(" F: "); Serial.print(distanceFront);
   Serial.print(" R: "); Serial.println(distanceRight);
 
-  if (distanceFront < 15) {
+  if (distanceFront < 15 && distanceLeft < 15) {
+    // Corner — front and left blocked
     turnRight();
-  } else if (distanceLeft < 10) {
-    moveForward();
-  } else if (distanceRight < 10) {
-    moveForward();
-  } else {
+  } else if (distanceFront < 15) {
+    // Front blocked only
+    turnRight();
+  } else if (distanceLeft > 15) {
+    // Left is open — turn left to follow wall
     turnLeft();
+  } else {
+    // Left wall detected — go straight
+    moveForward();
   }
 }
 
@@ -54,16 +58,35 @@ void moveForward() {
   analogWrite(motorRightBackward, 0);
 }
 
-void turnLeft() {
+void moveBackward() {
   analogWrite(motorLeftForward,   0);
-  analogWrite(motorRightForward,  turnspeed);
+  analogWrite(motorRightForward,  0);
+  analogWrite(motorLeftBackward,  motorSpeed);
+  analogWrite(motorRightBackward, motorSpeed);
+  delay(300);
+}
+
+void stopMotors() {
+  analogWrite(motorLeftForward,   0);
+  analogWrite(motorRightForward,  0);
+  analogWrite(motorLeftBackward,  0);
+  analogWrite(motorRightBackward, 0);
+}
+
+void turnLeft() {
+  stopMotors();
+  delay(100);
+  analogWrite(motorLeftForward,   0);
+  analogWrite(motorRightForward,  turnSpeed);
   analogWrite(motorLeftBackward,  0);
   analogWrite(motorRightBackward, 0);
   delay(500);
 }
 
 void turnRight() {
-  analogWrite(motorLeftForward,   turnspeed);
+  stopMotors();
+  delay(100);
+  analogWrite(motorLeftForward,   turnSpeed);
   analogWrite(motorRightForward,  0);
   analogWrite(motorLeftBackward,  0);
   analogWrite(motorRightBackward, 0);
