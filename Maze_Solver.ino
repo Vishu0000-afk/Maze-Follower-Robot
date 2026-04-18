@@ -36,7 +36,7 @@ void loop() {
   Serial.print(" F: "); Serial.print(distanceFront);
   Serial.print(" R: "); Serial.println(distanceRight);
 
-  if (distanceFront > 40 && distanceLeft > 40 && distanceRight > 40 ||distanceFront < 10 && distanceLeft < 10 && distanceRight > 10 ) {
+  if (distanceFront > 40 && distanceLeft > 40 && distanceRight > 40 ||distanceFront < 10 && distanceLeft < 10 && distanceRight < 10 ) {
     stopMotors();
     Serial.println("Maze Completed!");
     while(true);
