@@ -36,17 +36,19 @@ void loop() {
   Serial.print(" F: "); Serial.print(distanceFront);
   Serial.print(" R: "); Serial.println(distanceRight);
 
+  if (distanceFront > 40 && distanceLeft > 40 && distanceRight > 40 ||distanceFront < 10 && distanceLeft < 10 && distanceRight > 10 ) {
+    stopMotors();
+    Serial.println("Maze Completed!");
+    while(true);
+  }
+
   if (distanceFront < 15 && distanceLeft < 15) {
-    // Corner — front and left blocked
     turnRight();
   } else if (distanceFront < 15) {
-    // Front blocked only
     turnRight();
   } else if (distanceLeft > 15) {
-    // Left is open — turn left to follow wall
     turnLeft();
   } else {
-    // Left wall detected — go straight
     moveForward();
   }
 }
